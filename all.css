@@ -1,0 +1,68 @@
+body {
+    margin: 0;
+    padding: 0;
+    background: white;
+    line-height: 125%;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: normal;
+}
+
+#outline {
+    width: 180px;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    overflow: auto;
+    padding: 10px;
+}
+
+#document {
+    margin-left: 200px;
+    margin-right: 200px;
+    padding: 10px 50px;
+    outline: none;
+}
+
+ol.tree, ol.tree * {
+    margin: 0;
+    padding: 0;
+}
+
+ol.tree li {
+    padding-left: 16px;
+    list-style: none;
+}
+
+li.leaf {
+    background-image: url('line.gif'), url('leaf.gif');
+    background-repeat: repeat-y, no-repeat;
+}
+
+li.leaf_last {
+    background-image: url('last.gif'), url('leaf.gif');
+    background-repeat: no-repeat;
+}
+
+li.branch_open {
+    background-image: url('open.gif'), url('line.gif');
+    background-repeat: no-repeat, repeat-y;
+}
+
+li.branch_closed {
+    background-image: url('closed.gif'), url('line.gif');
+    background-repeat: no-repeat, repeat-y;
+}
+
+li.branch_open_last {
+    background-image: url('open.gif'), url('last.gif');
+    background-repeat: no-repeat;
+}
+
+li.branch_closed_last {
+    background-image: url('closed.gif'), url('last.gif');
+    background-repeat: no-repeat;
+}
+
