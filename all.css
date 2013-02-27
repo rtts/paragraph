@@ -2,29 +2,142 @@ body {
     margin: 0;
     padding: 0;
     background: white;
+    color: #333;
     line-height: 125%;
+}
+
+a {
+    cursor: pointer;
 }
 
 h1, h2, h3, h4, h5, h6 {
     font-weight: normal;
 }
 
-#outline {
-    width: 180px;
+span.paragraph {
+    color: #aaa;
+}
+
+#logo {
+    cursor: pointer;
+    display: inline-block;
+    margin-bottom: 1em;
+}
+
+#logo img {
+    vertical-align: middle;
+}
+
+#menu_button {
+    width: 0;
+    position: relative;
+    display: inline-block;
+    border-style: solid;
+    border-width: 5px 5px 0;
+    border-color: #999 transparent;
+}
+
+#menu, #menu li {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+#menu {
+    position: absolute;
+    top: 50px;
+    left: 9px;
+    background: white;
+    z-index: 101;
+    border: 1px solid #aaa;
+    border-radius:8px;
+    border-top-left-radius: 0;
+    padding: 10px;
+    font-size: 12px;
+    font-family: sans-serif;
+    box-shadow: 4px 4px 8px rgba(0,0,0,.2);
+    box-shadow: 2px 2px 8px rgba(0,0,0,.2);
+}
+
+span.keybinding {
+    float: right;
+    padding-left: 2em;
+}
+
+#outline_container {
+    width: 225px;
     height: 100%;
     position: fixed;
     top: 0;
     left: 0;
     overflow: auto;
+}
+
+#outline {
     padding: 10px;
+    font-size: 0.9em;
+    font-family: sans-serif;
+}
+
+#outline_title {
+    outline: none;
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+#document_container {
+    margin-left: 250px;
+    margin-right: 250px;
 }
 
 #document {
-    margin-left: 200px;
-    margin-right: 200px;
-    padding: 10px 50px;
     outline: none;
 }
+
+aside {
+    position: absolute;
+    right: 10px;
+    width: 190px;
+    padding: 0 10px;
+    border: 1px solid #aaa;
+    background: #fff;
+    border-radius:8px;
+    font-family: sans-serif;
+    line-height: 125%;
+    font-size: .8em;
+    outline: none;
+}
+
+/* creates a little gray triangle */
+aside:before {
+    content:"";
+    position:absolute;
+    border-style:solid;
+    top:10px;
+    left:-11px;
+    border-width:5px 10px 5px 0;
+    border-color:transparent #aaa;
+}
+
+/* overlaps it with a little white triangle */
+aside:after {
+    content:"";
+    position:absolute;
+    border-style:solid;
+    top:10px;
+    left:-9px;
+    border-width:5px 10px 5px 0;
+    border-color:transparent white;
+}
+/* TODO: render this more nicely in Firefox */
+
+
+
+
+aside:hover {
+    z-index: 10;
+}
+
 
 ol.tree, ol.tree * {
     margin: 0;
