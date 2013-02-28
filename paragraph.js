@@ -2,7 +2,7 @@ var MutationObserver = window.MutationObserver || window.WebKitMutationObserver 
 
 window.onload = function() {
     var observer = new MutationObserver(update_outline);
-    observer.observe($('#document'), { attributes: true, childList: true, characterData: true, subtree: true });
+    observer.observe($('article'), { attributes: true, childList: true, characterData: true, subtree: true });
     update_outline();
 
     document.execCommand("enableObjectResizing", false, false);
@@ -280,13 +280,13 @@ function make_toggler(element) {
 };
 
 function update_outline() {
-    var old_outline = $('#outline ol');
-    var new_outline = create_outline($('#document'));
+    var old_outline = $('nav ol');
+    var new_outline = create_outline($('article'));
 
     if (old_outline) {
-	$('#outline').replaceChild(new_outline, old_outline);
+	$('nav').replaceChild(new_outline, old_outline);
     } else {
-	$('#outline').appendChild(new_outline);
+	$('nav').appendChild(new_outline);
     }
 }
 
@@ -294,7 +294,7 @@ function update_outline() {
 function create_outline(element) {
     var section = element.firstElementChild;
     var list = document.createElement('ol');
-    list.classList.add("tree");
+    list.classList.add("outline");
     while (section) {
 	var entry = make_entry(section);
 	var next_section = section.nextElementSibling;
