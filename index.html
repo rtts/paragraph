@@ -1,27 +1,80 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
     <meta charset='utf-8'> 
     <title>Paragraph - An online outlining text editor</title>
-    <link href="all.css" rel="stylesheet" type="text/css" media="all">
+    <link href="interface.css" rel="stylesheet" type="text/css" media="all">
+    <link href="document.css" rel="stylesheet" type="text/css" media="all">
     <script src="paragraph.js"></script>
   </head>
   <body>
     <div id="outline_container">
-      <div class="overlay"></div>
       <ul id="menu">
-	<li><a>Save</a><span class="keybinding">ctrl-S</span></li>
-	<li><a>Insert heading</a><span class="keybinding">ctrl-H</span></li>
-	<li><a onclick="insert_note()">Insert note</a><span class="keybinding">ctrl-N</span></li>
-	<li><a>Increase level</a><span class="keybinding">TAB</span></li>
-	<li><a>Decrease level</a><span class="keybinding">shift-TAB</span></li>
-	<li><a>About</a><span class="keybinding">F1</span></li>
+
+	<li><a id="file">File <span class="arrow">&#9656;</span></a>
+	  <ul id="file_menu" class="submenu">
+	    <li><a id="save">Save</a><span class="keybinding">Ctrl-S</span></li>
+	    <li><a id="import">Import</a> <span class="arrow">&#9656;</span>
+	      <ul id="import_menu" class="submenu">
+		<li><a id="from_html">from HTML</a></li>
+	      </ul>
+	    </li>
+	    <li><a id="export">Export</a> <span class="arrow">&#9656;</span>
+	      <ul id="export_menu" class="submenu">
+		<li><a id="to_html">to HTML</a></li>
+		<li><a id="to_pdf">to PDF</a></li>
+		<li><a id="to_epub">to EPUB</a></li>
+	      </ul>
+	    </li>
+	  </ul>
+	</li>
+
+	<li><a id="edit">Edit <span class="arrow">&#9656;</span></a>
+	  <ul id="edit_menu" class="submenu">
+	    <li><a id="cut">Cut</a><span class="keybinding">Ctrl-X</span></li>
+	    <li><a id="copy">Copy</a><span class="keybinding">Ctrl-C</span></li>
+	    <li><a id="paste">Paste</a><span class="keybinding">Ctrl-V</span></li>
+	    <li><a id="increase">Increase level</a><span class="keybinding">TAB</span></li>
+	    <li><a id="decrease">Decrease level</a><span class="keybinding">Shift-TAB</span></li>
+	  </ul>
+	</li>
+
+	<li><a id="insert">Insert <span class="arrow">&#9656;</span></a>
+	  <ul id="insert_menu" class="submenu">
+	    <li><a id="emphasis">Emphasis</a><span class="keybinding">Ctrl-E</span></li>
+	    <li><a id="heading">Heading</a><span class="keybinding">Ctrl-H</span></li>
+	    <li><a id="note">Note</a><span class="keybinding">Ctrl-N</span></li>
+	    <li><a id="comment">Comment</a><span class="keybinding">Ctrl-C</span></li>
+	    <li><a id="quote">Quote</a><span class="keybinding">Ctrl-Q</span></li>
+	    <li><a id="code">Code</a></li>
+	    <li><a id="list">List <span class="arrow">&#9656;</span></a>
+	      <ul id="list_menu" class="submenu">
+		<li><a id="unordered">Unordered</a><span class="keybinding">Ctrl-U</span></li>
+		<li><a id="ordered">Ordered</a><span class="keybinding">Ctrl-O</span></li>
+		<li><a id="definition">Definition</a><span class="keybinding">Ctrl-D</span></li>
+	      </ul>
+	    </li>
+	  </ul>
+	</li>
+
+	<li><a id="view">View <span class="arrow">&#9656;</span></a>
+	  <ul id="view_menu" class="submenu">
+	    <li><a id="fullscreen">Fullscreen</a><span class="keybinding">Ctrl-F</span></li>
+	  </ul>
+	</li>
+
+	<li><a id="settings">Settings <span class="arrow">&#9656;</span></a>
+	  <ul id="settings_menu" class="submenu">
+	    <li><label>Language: <input id="language" type="text" value="en" /></label></li>
+	    <li><label><input id="justify" type="checkbox" checked />Justify</label></li>
+	    <li><label><input id="hyphenate" type="checkbox" checked />Hyphenate</label></li>
+	  </ul>
+	</li>
+
       </ul>
       <div id="outline">
 	<div id="logo">
 	  <img src="paragraph.png" alt="The Paragraph logo. The capital P is substited with a mirrored pilcrow symbol." />
-	  <div id="menu_button">
-	  </div>
 	</div>
 	<div id="outline_title" contenteditable="true">The Future of the Internet</div>
       </div>

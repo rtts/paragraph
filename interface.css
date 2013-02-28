@@ -10,10 +10,6 @@ a {
     cursor: pointer;
 }
 
-h1, h2, h3, h4, h5, h6 {
-    font-weight: normal;
-}
-
 span.paragraph {
     color: #aaa;
 }
@@ -28,25 +24,26 @@ span.paragraph {
     vertical-align: middle;
 }
 
-#menu_button {
-    width: 0;
-    position: relative;
-    display: inline-block;
-    border-style: solid;
-    border-width: 5px 5px 0;
-    border-color: #999 transparent;
+span.arrow {
+    color: #aaa;
+    margin-left: 2px;
 }
 
-#menu, #menu li {
+#menu, #menu li, .submenu, .submenu li {
     margin: 0;
     padding: 0;
     list-style: none;
+}
+
+.submenu {
+    padding-left: 1em;
 }
 
 #menu {
     position: absolute;
     top: 50px;
     left: 9px;
+    width: 170px;;
     background: white;
     z-index: 101;
     border: 1px solid #aaa;
@@ -62,6 +59,22 @@ span.paragraph {
 span.keybinding {
     float: right;
     padding-left: 2em;
+    color: #999;
+}
+
+#language {
+    width: 2em;
+    border: 1px solid #aaa;
+}
+
+input[type=checkbox] {
+    margin-left: 0;
+    padding-left: 0;
+    cursor: pointer;
+}
+
+label {
+    cursor: pointer;
 }
 
 #outline_container {
