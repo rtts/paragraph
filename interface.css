@@ -37,7 +37,7 @@ aside {
     width: 190px;
     padding: 10px;
     border: 1px solid #aaa;
-    background: #fff;
+    background: #fcfcfc;
     border-radius:8px;
     font-family: sans-serif;
     line-height: 125%;
@@ -64,7 +64,7 @@ aside:after {
     top:10px;
     left:-9px;
     border-width:5px 10px 5px 0;
-    border-color:transparent white;
+    border-color:transparent #fcfcfc;
 }
 
 aside:hover {
@@ -74,8 +74,8 @@ aside:hover {
 #menu {
     position: absolute;
     top: 40px;
-    left: 9px;
-    width: 170px;
+    left: 10px;
+    width: 185px;
     background: white;
     z-index: 101;
     border: 1px solid #aaa;
@@ -84,17 +84,14 @@ aside:hover {
     padding: 6px;
     font-size: 12px;
     font-family: sans-serif;
-    box-shadow: 2px 2px 8px rgba(0,0,0,.2);
-    background: #fafafa;
-
+    background: #fcfcfc;
 }
 
 #menu a {
     cursor: pointer;
     display: block;
     padding: 4px;
-    padding-top: 3px;
-    border: 1px solid #fafafa;
+    border: 1px solid #fcfcfc;
     border-radius: 4px;
 }
 
@@ -116,14 +113,14 @@ aside:hover {
     color: #999;
 }
 
-#menu ul, #menu li, .submenu, .submenu li {
+#menu menu, #menu li, .submenu li {
     margin: 0;
     padding: 0;
     list-style: none;
 }
 
 #menu .submenu {
-    padding-left: 1em;
+    padding-left: 1.5em;
 }
 
 #menu #language {

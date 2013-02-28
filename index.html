@@ -11,68 +11,69 @@
 
     <nav>
       <img id="logo" src="paragraph.png" alt="The Paragraph logo. The capital P is substited with a mirrored pilcrow symbol." />
-      <ul id="menu">
+      <menu id="menu">
 	<li><a id="file" class="expands">File</a>
-	  <ul id="file_menu" class="submenu">
+	  <menu id="file_menu" class="submenu">
 	    <li><a id="save">Save <span class="keybinding">Ctrl-S</span></a></li>
 	    <li><a id="import" class="expands">Import</a>
-	      <ul id="import_menu" class="submenu">
+	      <menu id="import_menu" class="submenu">
 		<li><a id="from_html">from HTML</a></li>
-	      </ul>
+	      </menu>
 	    </li>
 	    <li><a id="export" class="expands">Export</a>
-	      <ul id="export_menu" class="submenu">
+	      <menu id="export_menu" class="submenu">
 		<li><a id="to_html">to HTML</a></li>
 		<li><a id="to_pdf">to PDF</a></li>
 		<li><a id="to_epub">to EPUB</a></li>
-	      </ul>
+	      </menu>
 	    </li>
-	  </ul>
+	  </menu>
 	</li>
 	<li><a id="edit" class="expands">Edit</a>
-	  <ul id="edit_menu" class="submenu">
+	  <menu id="edit_menu" class="submenu">
 	    <li><a id="cut">Cut <span class="keybinding">Ctrl-X</span></a></li>
 	    <li><a id="copy">Copy <span class="keybinding">Ctrl-C</span></a></li>
 	    <li><a id="paste">Paste <span class="keybinding">Ctrl-V</span></a></li>
-	    <li><a id="increase">Increase level</a><span class="keybinding">TAB</span></li>
-	    <li><a id="decrease">Decrease level</a><span class="keybinding">Shift-TAB</span></li>
-	  </ul>
+	    <li><a id="increase">Increase level <span class="keybinding">TAB</span></a></li>
+	    <li><a id="decrease">Decrease level <span class="keybinding">Shift-TAB</span></a></li>
+	  </menu>
 	</li>
 	<li><a id="insert" class="expands">Insert</a>
-	  <ul id="insert_menu" class="submenu">
+	  <menu id="insert_menu" class="submenu">
 	    <li><a id="emphasis">Emphasis <span class="keybinding">Ctrl-E</span></a></li>
 	    <li><a id="heading">Heading <span class="keybinding">Ctrl-H</span></a></li>
+	    <li><a id="hyperlink">Hyperlink <span class="keybinding">Ctrl-L</span></a></li>
 	    <li><a id="note">Note <span class="keybinding">Ctrl-N</span></a></li>
 	    <li><a id="comment">Comment <span class="keybinding">Ctrl-C</span></a></li>
 	    <li><a id="quote">Quote <span class="keybinding">Ctrl-Q</span></a></li>
-	    <li><a id="code">Code</a></li>
+	    <li><a id="preformatted">Preformatted <span class="keybinding">Ctrl-P</span></a></li>
+	    <li><a id="table">Table <span class="keybinding">Ctrl-T</span></a></li>
 	    <li><a id="list" class="expands">List</a>
-	      <ul id="list_menu" class="submenu">
+	      <menu id="list_menu" class="submenu">
 		<li><a id="unordered">Unordered <span class="keybinding">Ctrl-U</span></a></li>
 		<li><a id="ordered">Ordered <span class="keybinding">Ctrl-O</span></a></li>
 		<li><a id="definition">Definition <span class="keybinding">Ctrl-D</span></a></li>
-	      </ul>
+	      </menu>
 	    </li>
-	  </ul>
+	  </menu>
 	</li>
 	<li><a id="view" class="expands">View</a>
-	  <ul id="view_menu" class="submenu">
+	  <menu id="view_menu" class="submenu">
 	    <li><a id="fullscreen">Fullscreen <span class="keybinding">Ctrl-F</span></a></li>
-	  </ul>
+	  </menu>
 	</li>
 	<li><a id="settings" class="expands">Settings</a>
-	  <ul id="settings_menu" class="submenu">
+	  <menu id="settings_menu" class="submenu">
 	    <li><label>Language: <input id="language" type="text" value="en" /></label></li>
 	    <li><label><input id="justify" type="checkbox" checked />Justify</label></li>
 	    <li><label><input id="hyphenate" type="checkbox" checked />Hyphenate</label></li>
-	  </ul>
+	  </menu>
 	</li>
-      </ul>
+      </menu>
       <noscript>
         The document's outline will appear here if you enable Javascript.
       </noscript>
     </nav>
-
 
     <article contenteditable="true">
       <h1>The Future of the Internet</h1>
