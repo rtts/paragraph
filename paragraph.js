@@ -4,38 +4,62 @@ window.onload = function() {
     var observer = new MutationObserver(update_outline);
     observer.observe($('article'), { attributes: true, childList: true, characterData: true, subtree: true });
     update_outline();
-                     
-    menu($('#logo'), $('#menu'));
-    menu($('#file'), $('#file_menu'));
-    menu($('#import'), $('#import_menu'));
-    menu($('#export'), $('#export_menu'));
-    menu($('#edit'), $('#edit_menu'));
-    menu($('#list'), $('#list_menu'));
-    menu($('#insert'), $('#insert_menu'));
-    menu($('#view'), $('#view_menu'));
-    menu($('#settings'), $('#settings_menu'));
     
+    bind($('#logo'), $('#menu'),
+         function(node) { return node.nodeName == 'A' }, 
+         function(node) { return node.nodeName == 'MENU'}
+        );
     $('article').contentEditable = 'true';
 };
 
-function menu(item, submenu) {
-    item.addEventListener('click', menu_toggler(submenu));
+// Given the first button, the first submenu, and tests to determine
+// deeper items and submenus, traverses a list structure and sets
+// toggling event handlers
+function bind(button, submenu, is_button, is_submenu) {
+    var item = submenu.firstChild;
+    hide(submenu);
+    button.addEventListener('click', function() { toglita(submenu) });
+    
+    // loop over list items
+    while (item) {
+        if (item.nodeName == 'LI') {
+            var next_button = null;
+            var next_submenu = null;
+            var contents = item.firstChild;
+            
+            // loop over item contents
+            while (contents) {
+                if (is_button(contents)) next_button = contents;
+                if (is_submenu(contents)) next_submenu = contents;
+                contents = contents.nextSibling;
+            }
+            
+            // recurse
+            if (next_button && next_submenu) {
+                button.addEventListener('click', function() { hide(next_submenu) });
+                bind(next_button, next_submenu, is_button, is_submenu);
+            }
+        }
+        item = item.nextSibling;
+    }
+}
+
+function toglita(el) {
+    return el.style.display = el.style.display === 'none' ? 'block' : 'none';
 }
 
 // Returns an event handler that toggles the element
-function menu_toggler(element) {
+function toggle(element, callback) {
     element.style.display = 'none';
-    function flip(e) {
-        console.log("Now showing: " + element.id);
+    function flip() {
         unhide(element);
-        this.removeEventListener('click', flip);
-        this.addEventListener('click', flop);
+        this.onclick = flop;
+        if (callback) callback(true);
     };
-    function flop(e) {
-        console.log("Now hiding: " + element.id);
+    function flop() {
         hide(element);
-        this.removeEventListener('click', flop);
-        this.addEventListener('click', flip);
+        this.onclick = flip;
+        if (callback) callback(false);
     }
     return flip;
 }
@@ -47,27 +71,15 @@ function unhide(el) {
     el.style.display = 'block';
 }
 
-// Returns an event handler that toggles the element and calls back
-// for more instructions. 
-function toggle(element, callback, initial_state) {
-    var visible = initial_state !== false;
-    if (!visible) element.style.display = 'none';
-    return function(event) {
-        element.style.display = visible ? 'none' : 'block';
-        visible = !visible;
-        callback(visible, event);
-    };
-}
-
 // Returns a button that toggles the visibility of the subtree.
 function tree_toggler(tree) {
     var img = document.createElement('img');
     img.src = 'closed.gif'; //preload
     img.src = 'open.gif';
     img.className = 'icon';
-    img.addEventListener('click', toggle(tree, function(visible) {
-        img.src = visible ? 'open.gif' : 'closed.gif';
-    }));
+//    img.addEventListener('click', toggle(tree, function(visible) {
+//        img.src = visible ? 'open.gif' : 'closed.gif';
+//    }));
     return img;
 }
 
@@ -77,9 +89,9 @@ function tree_hider(section) {
     img.src = 'hidden.png'; //preload
     img.src = 'visible.png';
     img.className = 'icon';
-    img.addEventListener('click', toggle(section.associatedNodes[0], function(visible) {
-        img.src = visible ? 'visible.png' : 'hidden.png';
-    }));
+//    img.addEventListener('click', toggle(section.associatedNodes[0], function(visible) {
+//        img.src = visible ? 'visible.png' : 'hidden.png';
+//    }));
     return img;
 }
 
@@ -87,7 +99,7 @@ function tree_hider(section) {
 function printOutline(sections) {
     var ol = document.createElement("ol");
     ol.className = 'outline';
-    for(var i in sections) {
+    for (var i = 0; i < sections.length; i++) {
         var section = sections[i];
         var nextsection = sections[i+1];
         var li = document.createElement("li");
@@ -124,7 +136,7 @@ function printOutline(sections) {
         if (section.childSections.length) li.appendChild (subtree);
 	ol.appendChild(li);
 
-	if (nextsection) {
+        if (nextsection) {
 	    li.classList.add('leaf');
 	} else {
 	    li.classList.add('leaf_last');
