@@ -22,26 +22,29 @@ function menu(item, submenu) {
     item.addEventListener('click', menu_toggler(submenu));
 }
 
-// Returns an event handler that toggles the submenu, and hides all
-// menu's when the user clicks outside the menu.
+// Returns an event handler that toggles the element
 function menu_toggler(element) {
-    //element.addEventListener('click', function(e) { e.stopPropagation() });
-    var toggler;
-    var one_time_handler = function(e) {
-        toggler(e);
-        document.removeEventListener('click', one_time_handler);
+    element.style.display = 'none';
+    function flip(e) {
+        console.log("Now showing: " + element.id);
+        unhide(element);
+        this.removeEventListener('click', flip);
+        this.addEventListener('click', flop);
     };
-    var toggler = toggle(element, function(visible, e) {
-        e.stopPropagation();
-	if (visible) {
-	    document.addEventListener('click', one_time_handler);
-        } else {
-            document.removeEventListener('click', one_time_handler);
-            
-            // the code to hide all children goes here
-        }
-    }, false);
-    return toggler;
+    function flop(e) {
+        console.log("Now hiding: " + element.id);
+        hide(element);
+        this.removeEventListener('click', flop);
+        this.addEventListener('click', flip);
+    }
+    return flip;
+}
+
+function hide(el) {
+    el.style.display = 'none';
+}
+function unhide(el) {
+    el.style.display = 'block';
 }
 
 // Returns an event handler that toggles the element and calls back
