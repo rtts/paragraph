@@ -1,355 +1,159 @@
-// poor man's jquery...
-function $(query) {
-    return document.querySelector(query);
-}
-
-function $$(query) {
-    return document.querySelectorAll(query);
-}
 var MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver;
 
 window.onload = function() {
     var observer = new MutationObserver(update_outline);
     observer.observe($('article'), { attributes: true, childList: true, characterData: true, subtree: true });
     update_outline();
-
-    document.execCommand("enableObjectResizing", false, false);
+                     
+    menu($('#logo'), $('#menu'));
+    menu($('#file'), $('#file_menu'));
+    menu($('#import'), $('#import_menu'));
+    menu($('#export'), $('#export_menu'));
+    menu($('#edit'), $('#edit_menu'));
+    menu($('#list'), $('#list_menu'));
+    menu($('#insert'), $('#insert_menu'));
+    menu($('#view'), $('#view_menu'));
+    menu($('#settings'), $('#settings_menu'));
     
-    $('#logo').addEventListener('click', make_toggler($('#menu')));
-    $('#file').addEventListener('click', make_toggler($('#file_menu')));
-      $('#import').addEventListener('click', make_toggler($('#import_menu')));
-      $('#export').addEventListener('click', make_toggler($('#export_menu')));
-    $('#edit').addEventListener('click', make_toggler($('#edit_menu')));
-      $('#list').addEventListener('click', make_toggler($('#list_menu')));
-    $('#insert').addEventListener('click', make_toggler($('#insert_menu')));
-    $('#view').addEventListener('click', make_toggler($('#view_menu')));
-    $('#settings').addEventListener('click', make_toggler($('#settings_menu')));
+    $('article').contentEditable = 'true';
 };
 
-// Returns an event handler that toggles the element
-function make_toggler(element) {
-    var visible = false;
-    element.style.display = 'none';
-    element.addEventListener('click', function(e) { e.stopPropagation() });
-    return function(e) {
+function menu(item, submenu) {
+    item.addEventListener('click', menu_toggler(submenu));
+}
+
+// Returns an event handler that toggles the submenu, and hides all
+// menu's when the user clicks outside the menu.
+function menu_toggler(element) {
+    //element.addEventListener('click', function(e) { e.stopPropagation() });
+    var toggler;
+    var one_time_handler = function(e) {
+        toggler(e);
+        document.removeEventListener('click', one_time_handler);
+    };
+    var toggler = toggle(element, function(visible, e) {
+        e.stopPropagation();
 	if (visible) {
-	    element.style.display = 'none';
-	    visible = false;
+	    document.addEventListener('click', one_time_handler);
+        } else {
+            document.removeEventListener('click', one_time_handler);
+            
+            // the code to hide all children goes here
+        }
+    }, false);
+    return toggler;
+}
+
+// Returns an event handler that toggles the element and calls back
+// for more instructions. 
+function toggle(element, callback, initial_state) {
+    var visible = initial_state !== false;
+    if (!visible) element.style.display = 'none';
+    return function(event) {
+        element.style.display = visible ? 'none' : 'block';
+        visible = !visible;
+        callback(visible, event);
+    };
+}
+
+// Returns a button that toggles the visibility of the subtree.
+function tree_toggler(tree) {
+    var img = document.createElement('img');
+    img.src = 'closed.gif'; //preload
+    img.src = 'open.gif';
+    img.className = 'icon';
+    img.addEventListener('click', toggle(tree, function(visible) {
+        img.src = visible ? 'open.gif' : 'closed.gif';
+    }));
+    return img;
+}
+
+// Returns a button that toggles the visibility of the associated section.
+function tree_hider(section) {
+    var img = document.createElement('img');
+    img.src = 'hidden.png'; //preload
+    img.src = 'visible.png';
+    img.className = 'icon';
+    img.addEventListener('click', toggle(section.associatedNodes[0], function(visible) {
+        img.src = visible ? 'visible.png' : 'hidden.png';
+    }));
+    return img;
+}
+
+
+function printOutline(sections) {
+    var ol = document.createElement("ol");
+    ol.className = 'outline';
+    for(var i in sections) {
+        var section = sections[i];
+        var nextsection = sections[i+1];
+        var li = document.createElement("li");
+        var title = document.createElement("a");
+        
+        if(section.heading === null || /^[ \r\n\t]*$/.test(section.heading.text)) {
+	    li.className = "h5o-notitle";
+	    switch(section.associatedNodes[0].nodeName.toLowerCase()) {
+	    case "body": title.textContent = "Document"; break;
+	    case "article": title.textContent = "Article"; break;
+	    case "aside": title.textContent = "Aside"; break;
+	    case "nav": title.textContent = "Navigation"; break;
+	    case "section": title.textContent = "Section"; break;
+	    default: title.textContent = "Empty title";
+	    }
+        } else title.textContent = section.heading.text;
+        
+        var node = section.associatedNodes[0];
+        if(node.sectionType !== 1 && node.sectionType !== 2) node = section.heading;
+        title.href = "#" + node.id;
+        
+        title.addEventListener("click", function(event) {
+	    event.preventDefault();
+	    node.scrollIntoView();
+        }, false);
+
+	if (section.childSections.length) {
+            var subtree = printOutline(section.childSections);
+            li.appendChild(tree_toggler(subtree));
+        }
+
+        li.appendChild(tree_hider(section));
+        li.appendChild(title);
+        if (section.childSections.length) li.appendChild (subtree);
+	ol.appendChild(li);
+
+	if (nextsection) {
+	    li.classList.add('leaf');
 	} else {
-	    e.stopPropagation();
-	    element.style.display = 'block';
-	    visible = true;
-	    document.addEventListener('click', function(e) {
-		element.style.display = 'none';
-		visible = false;
-		document.removeEventListener('click', arguments.callee);
-	    });
+	    li.classList.add('leaf_last');
 	}
-    };
-};
-
-/*
-                document
-document        +--section
-+--h1              +--h1
-+--p      ===>     +--p
-+--h2              +--section
-+--p                  +--h2
-                      +--p
-*/
-
-// Walks the elements of a DOM depth-first, calling enter(el) and
-// exit(el) when entering/leaving each node. As a premature
-// optimization, if enter(el) returns false it will not descend into the
-// subtree.
-function racewalk(root, enter, exit) {
-    var node = root;
-    start: while (node) {
-        if (enter(node) && node.firstElementChild) {
-            // descend!
-            node = node.firstElementChild;
-            continue start;
-        }
-        while (node) {
-            exit(node);
-            if (node == root) {
-                return;
-            } else if (node.nextElementSibling) {
-                // descend again!
-                node = node.nextElementSibling;
-                continue start;
-            } else {
-                node = node.parentNode;
-            }
-        }
     }
+    return ol;
 }
 
-// A customized implementation of the HTML5 outlining algorithm
-// described by http://dev.w3.org/html5/spec/ Also very much inspired
-// by https://github.com/hoyois/html5outliner (thanks Marc!)
-function HTMLOutline(root) {
-    
-    // BEGIN OUTLINE ALGORITHM
-    // STEP 1
-    var currentOutlinee = null; // element whose outline is being created
-    // STEP 2
-    var currentSection = null; // current section
-    
-    // STEP 3
-    // Minimal stack object
-    var stack = {"lastIndex": -1};
-    stack.isEmpty = function() {
-        return stack.lastIndex === -1;
-    };
-    stack.push = function(e) {
-        stack[++stack.lastIndex] = e;
-        stack.top = e;
-    };
-    stack.pop = function() {
-        var e = stack.top;
-        delete stack[stack.lastIndex--];
-        stack.top = stack[stack.lastIndex];
-        return e;
-    };
-    
-    // STEP 4 (minus DOM walk which is at the end)
-    function enter(node) {
-        if(isElement(node)) {
-            if(!stack.isEmpty() && (isHeadingElement(stack.top) || isHidden(stack.top))) {
-                // Do nothing
-            } else if(isHidden(node)) {
-                stack.push(node);
-            } else if(isSectioningContentElement(node) || isSectioningRootElement(node)) {
-                // if(currentOutlinee !== null && currentSection.heading === null) {
-                // Create implied heading
-                // }
-                if(currentOutlinee !== null) stack.push(currentOutlinee);
-                currentOutlinee = node;
-                currentSection = new Section();
-                associateNodeWithSection(currentOutlinee, currentSection);
-                currentOutlinee.appendSection(currentSection);
-            } else if(currentOutlinee === null) {
-                // Do nothing
-            } else if(isHeadingElement(node)) {
-                if(currentSection.heading === null) currentSection.heading = node;
-                else if(currentOutlinee.lastSection.heading === null || node.rank >= currentOutlinee.lastSection.heading.rank) {
-                    currentSection = new Section();
-                    currentSection.heading = node;
-                    currentOutlinee.appendSection(currentSection);
-                } else {
-                    var candidateSection = currentSection;
-                    do {
-                        if(node.rank < candidateSection.heading.rank) {
-                            currentSection = new Section();
-                            currentSection.heading = node;
-                            candidateSection.appendChild(currentSection);
-                            break;
-                        }
-                        var newCandidate = candidateSection.parentSection;
-                        candidateSection = newCandidate;
-                    } while(true);
-                }
-                stack.push(node);
-            } // else {
-            // Do nothing
-            // }
-        }
-    }
-    
-    function exit(node) {
-        if(isElement(node)) {
-            if(!stack.isEmpty() && node === stack.top) stack.pop();
-            else if(!stack.isEmpty() && (isHeadingElement(stack.top) || isHidden(stack.top))) {
-                // Do nothing
-            } else if(!stack.isEmpty() && isSectioningContentElement(node)) {
-                // if(currentSection.heading === null) {
-                // Create implied heading
-                // }
-                currentOutlinee = stack.pop();
-                currentSection = currentOutlinee.lastSection;
-                for(var i = 0; i < node.sectionList.length; i++) {
-                    currentSection.appendChild(node.sectionList[i]);
-                }
-            } else if(!stack.isEmpty() && isSectioningRootElement(node)) {
-                // if(currentSection.heading === null) {
-                // Create implied heading
-                // }
-                currentOutlinee = stack.pop();
-                currentSection = currentOutlinee.lastSection;
-                while(currentSection.childSections.length > 0) {
-                    currentSection = currentSection.lastChild;
-                }
-            } else if(isSectioningContentElement(node) || isSectioningRootElement(node)) {
-                // if(currentSection.heading === null) {
-                // Create implied heading
-                // }
-                // The algorith says to end the walk here, but that's assuming root is a sectioning element
-                // Instead we reset the algorithm for subsequent top-level sectioning elements
-                currentOutlinee = null;
-                currentSection = null;
-            } // else {
-            // Do nothing
-            // }
-        }
-        if(node.associatedSection === null && currentSection !== null) associateNodeWithSection(node, currentSection);
-    }
-    
-    // STEP 5
-    // The heading associated to node is node.associatedSection.heading, if any
-    // END OUTLINE ALGORITHM
-    
-    // Now we must make the necessary definitions for the above to make sense
-    function associateNodeWithSection(node, section) {
-        section.associatedNodes.push(node);
-        node.associatedSection = section;
-    }
-    
-    function isElement(node) {
-        return node.nodeType === 1;
-    }
-    
-    function isHidden(node) {
-        return node.hidden;
-    }
-    
-    function isSectioningContentElement(node) {
-        return node.sectionType === 1;
-    }
-    
-    function isSectioningRootElement(node) {
-        return node.sectionType === 2;
-    }
-    
-    function isHeadingElement(node) {
-        return node.rank !== undefined;
-    }
-    
-    function extend(node) {
-        if(node.nodeType === 1) {
-            switch(node.nodeName.toLowerCase()) {
-            case "blockquote": case "body": case "details": case "fieldset": case "figure": case "td":
-                extendSectioningRootElement(node);
-                break;
-            case "article": case "aside": case "nav": case "section":
-                extendSectioningContentElement(node);
-                break;
-            case "h1": case "h2": case "h3": case "h4": case "h5": case "h6":
-                extendHeadingElement(node);
-                break;
-            case "hgroup":
-                extendHeadingGroupElement(node);
-                break;
-            default:
-                extendNode(node);
-            }
-        } else extendNode(node);
-    }
-    
-    function extendNode(node) {
-        node.associatedSection = null;
-    }
-    
-    function extendSectioningElement(node) {
-        extendNode(node);
-        node.sectionList = [];
-        node.firstSection = null;
-        node.lastSection = null;
-        
-        node.appendSection = function(section) {
-            this.sectionList.push(section);
-            if(this.firstSection === null) this.firstSection = section;
-            this.lastSection = section;
-        };
-    }
-    
-    function extendSectioningContentElement(node) {
-        extendSectioningElement(node);
-        node.sectionType = 1;
-    }
-    
-    function extendSectioningRootElement(node) {
-        extendSectioningElement(node);
-        node.sectionType = 2;
-    }
-    
-    function extendHeadingContentElement(node) {
-        extendNode(node);
-        Object.defineProperty(node, "depth", {"get": function() {
-            var section = node.associatedSection;
-            var depth = 1;
-            if(section !== null) {
-                while(section = section.parentSection) ++depth;
-            }
-            return depth;
-        }, "configurable": true, "enumerable": true});
-    }
-    
-    function extendHeadingElement(node) {
-        extendHeadingContentElement(node);
-        node.rank = -parseInt(node.nodeName.charAt(1));
-        node.text = node.textContent;
-    }
-    
-    function extendHeadingGroupElement(node) {
-        extendHeadingContentElement(node);
-        
-        for(var i = 1; i <= 6; i++) {
-            var h = node.getElementsByTagName("h" + i);
-            if(h.length > 0) {
-                node.rank = -i;
-                node.text = h[0].textContent;
-                break;
-            }
-        }
-        
-        if(node.rank === undefined) {
-            node.rank = -1;
-            node.text = "";
-        }
-    }
-    
-    // Walk the DOM subtree of root
-    var node = root;
-    start: while(node) {
-        extend(node);
-        enter(node);
-        if(node.firstChild) {
-            node = node.firstChild;
-            continue start;
-        }
-        while(node) {
-            exit(node);
-            if(node === root) break start;
-            if(node.nextSibling) {
-                node = node.nextSibling;
-                continue start;
-            }
-            node = node.parentNode;
-        }
-    }
-}
 
 
 
 // THE FOLLOWING ARE BAD AND HAVE TO GO
 
 function update_outline() {
+    HTMLOutline($('article'));
     var old_outline = $('nav ol');
-    var new_outline = create_outline($('article'));
-
+    var new_outline = printOutline($('article').sectionList);
+    
     if (old_outline) {
 	$('nav').replaceChild(new_outline, old_outline);
     } else {
 	$('nav').appendChild(new_outline);
     }
 }
-
+        
 // returns a nested <ol> of the DOM tree beneath element
 function create_outline(element) {
     var section = element.firstElementChild;
     var list = document.createElement('ol');
-    list.classList.add("outline");
+    list.className = 'outline';
+    
+    
     while (section) {
 	var entry = make_entry(section);
 	var next_section = section.nextElementSibling;
@@ -410,3 +214,7 @@ function make_entry(node) {
     return li;
 }
 
+// Poor man's JQuery
+function $(query) {
+    return document.querySelector(query);
+}

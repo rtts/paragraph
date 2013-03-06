@@ -1,6 +1,15 @@
+html {
+    height: 100%;
+}
+
 body {
+    margin: 0;
+    padding: 0;
+    padding-left: 235px;;
     background: white;
     color: #333;
+    height: 100%;
+    overflow: hidden;
 }
 
 #logo {
@@ -10,11 +19,11 @@ body {
 }
 
 nav {
-    width: 225px;
-    height: 100%;
     position: fixed;
     top: 0;
     left: 0;
+    height: 100%;
+    width: 225px;
     overflow: auto;
     padding-left: 10px;
     font-size: 0.9em;
@@ -26,49 +35,10 @@ nav .paragraph {
 }
 
 article {
-    margin-left: 250px;
-    margin-right: 250px;
     outline: none;
-}
-
-aside {
-    position: absolute;
-    right: 10px;
-    width: 190px;
-    padding: 10px;
-    border: 1px solid #aaa;
-    background: #fcfcfc;
-    border-radius:8px;
-    font-family: sans-serif;
-    line-height: 125%;
-    font-size: .8em;
-    outline: none;
-}
-
-/* creates a little gray triangle */
-aside:before {
-    content:"";
-    position:absolute;
-    border-style:solid;
-    top:10px;
-    left:-11px;
-    border-width:5px 10px 5px 0;
-    border-color:transparent #aaa;
-}
-
-/* overlaps it with a little white triangle */
-aside:after {
-    content:"";
-    position:absolute;
-    border-style:solid;
-    top:10px;
-    left:-9px;
-    border-width:5px 10px 5px 0;
-    border-color:transparent #fcfcfc;
-}
-
-aside:hover {
-    z-index: 10;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
 }
 
 #menu {
@@ -146,6 +116,10 @@ aside:hover {
 .outline li {
     padding-left: 16px;
     list-style: none;
+}
+
+.outline .icon {
+    vertical-align: middle;
 }
 
 .outline li.leaf {
