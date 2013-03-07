@@ -120,6 +120,13 @@ article {
 
 .outline .icon {
     vertical-align: middle;
+    position: relative;
+    left: -16px;
+}
+
+.outline .icon + a {
+    position: relative;
+    left: -9px;
 }
 
 .outline li.leaf {

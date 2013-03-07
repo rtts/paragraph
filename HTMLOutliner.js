@@ -243,15 +243,15 @@ function HTMLOutline(root) {
 	start: while(node) {
 		extend(node);
 		enter(node);
-		if(node.firstChild) {
-			node = node.firstChild;
+		if(node.firstElementChild) {
+			node = node.firstElementChild;
 			continue start;
 		}
 		while(node) {
 			exit(node);
 			if(node === root) break start;
-			if(node.nextSibling) {
-				node = node.nextSibling;
+			if(node.nextElementSibling) {
+				node = node.nextElementSibling;
 				continue start;
 			}
 			node = node.parentNode;

@@ -1,74 +1,60 @@
 var MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver;
 
+var new_article;
 window.onload = function() {
     var observer = new MutationObserver(update_outline);
     observer.observe($('article'), { attributes: true, childList: true, characterData: true, subtree: true });
     update_outline();
     
-    bind($('#logo'), $('#menu'),
-         function(node) { return node.nodeName == 'A' }, 
-         function(node) { return node.nodeName == 'MENU'}
-        );
+    // Ideetje om te converteren:
+    // 0. begin bij een sectie
+    // 1. maak een <section>
+    // 2. loop over de kinderen van <article>
+    //    a. als kind.associatedSection == sectie
+    //       - voeg dan een kloon toe aan <section>
+    //    b. anders, doe hetzelfde maar dan voor kind.associatedSection
+
     $('article').contentEditable = 'true';
+    
+    // Make the logo toggle the menu
+    $('#logo').addEventListener('click', toggle_all(false, $('#menu'), function(node) {
+        return node.id == 'menu' || node.className == 'submenu';
+    }));
+
+    // Walk the menu and bind all nested buttons
+    walk($('#menu'), function(node) {
+        if (node.className == "expands") {
+            var submenu = node.nextElementSibling;
+            node.addEventListener('click', toggle_all(false, submenu, function(node) {
+                return node.className == "submenu";
+            }));
+        }
+    });
 };
 
-// Given the first button, the first submenu, and tests to determine
-// deeper items and submenus, traverses a list structure and sets
-// toggling event handlers
-function bind(button, submenu, is_button, is_submenu) {
-    var item = submenu.firstChild;
-    hide(submenu);
-    button.addEventListener('click', function() { toglita(submenu) });
-    
-    // loop over list items
-    while (item) {
-        if (item.nodeName == 'LI') {
-            var next_button = null;
-            var next_submenu = null;
-            var contents = item.firstChild;
-            
-            // loop over item contents
-            while (contents) {
-                if (is_button(contents)) next_button = contents;
-                if (is_submenu(contents)) next_submenu = contents;
-                contents = contents.nextSibling;
-            }
-            
-            // recurse
-            if (next_button && next_submenu) {
-                button.addEventListener('click', function() { hide(next_submenu) });
-                bind(next_button, next_submenu, is_button, is_submenu);
-            }
+// Returns an event handler that toggles an element and its subtrees
+function toggle_all(initial_state, el, is_subtree) {
+    initial_state || hide(el);
+    return function(e) {
+        if (hidden(el)) {
+            unhide(el);
+        } else {
+            walk(el, function(node) {
+                if (is_subtree(node) && !hidden(node)) {
+                    hide(node);
+                }
+            });
         }
-        item = item.nextSibling;
-    }
-}
-
-function toglita(el) {
-    return el.style.display = el.style.display === 'none' ? 'block' : 'none';
-}
-
-// Returns an event handler that toggles the element
-function toggle(element, callback) {
-    element.style.display = 'none';
-    function flip() {
-        unhide(element);
-        this.onclick = flop;
-        if (callback) callback(true);
     };
-    function flop() {
-        hide(element);
-        this.onclick = flip;
-        if (callback) callback(false);
-    }
-    return flip;
 }
-
 function hide(el) {
     el.style.display = 'none';
 }
 function unhide(el) {
     el.style.display = 'block';
+}
+function hidden(el) {
+    return el.style.display == 'none';
 }
 
 // Returns a button that toggles the visibility of the subtree.
@@ -77,24 +63,44 @@ function tree_toggler(tree) {
     img.src = 'closed.gif'; //preload
     img.src = 'open.gif';
     img.className = 'icon';
-//    img.addEventListener('click', toggle(tree, function(visible) {
-//        img.src = visible ? 'open.gif' : 'closed.gif';
-//    }));
+    img.addEventListener('click', function(e) {
+        if (hidden(tree)) {
+            unhide(tree);
+            img.src = 'open.gif';
+        } else {
+            hide(tree);
+            img.src = 'closed.gif';
+        }});
     return img;
 }
 
 // Returns a button that toggles the visibility of the associated section.
 function tree_hider(section) {
     var img = document.createElement('img');
-    img.src = 'hidden.png'; //preload
-    img.src = 'visible.png';
+    var docnode = section.associatedNodes[0];
+    img.src = 'hidden.gif'; //preload
+    if (!hidden(docnode)) img.src = 'visible.gif';
     img.className = 'icon';
-//    img.addEventListener('click', toggle(section.associatedNodes[0], function(visible) {
-//        img.src = visible ? 'visible.png' : 'hidden.png';
-//    }));
+    img.addEventListener('click', function(e) {
+        if (hidden(docnode)) {
+            unhide(docnode);
+            this.src = 'visible.gif';
+        } else {
+            hide(docnode);
+            this.src = 'hidden.gif';
+        }
+    });
     return img;
 }
 
+function is_section(node) {
+    switch (node.nodeName) {
+    case "ARTICLE": case "ASIDE": case "NAV": case "SECTION": return true;
+    default: return false;
+    }
+}
+
+// THE FOLLOWING ARE BAD AND HAVE TO GO
 
 function printOutline(sections) {
     var ol = document.createElement("ol");
@@ -131,8 +137,12 @@ function printOutline(sections) {
             li.appendChild(tree_toggler(subtree));
         }
 
-        li.appendChild(tree_hider(section));
+        //var hider = tree_hider(section);
+        //hider.style.float = 'right';
+        //li.appendChild(hider);
+
         li.appendChild(title);
+
         if (section.childSections.length) li.appendChild (subtree);
 	ol.appendChild(li);
 
@@ -144,11 +154,6 @@ function printOutline(sections) {
     }
     return ol;
 }
-
-
-
-
-// THE FOLLOWING ARE BAD AND HAVE TO GO
 
 function update_outline() {
     HTMLOutline($('article'));
@@ -227,6 +232,30 @@ function make_entry(node) {
 	span.textContent = node.nodeName;
     }
     return li;
+}
+
+// Walks a DOM tree, calling enter() and exit() for each node. Taken from
+// http://www.w3.org/html/wg/drafts/html/master/sections.html#outlines
+function walk(root, enter, exit) {
+    var node = root;
+    start: while (node) {
+        if (enter) enter(node);
+        if (node.firstElementChild) {
+            node = node.firstElementChild;
+            continue start;
+        }
+        while (node) {
+            if (exit) exit(node);
+            if (node == root) {
+                node = null;
+            } else if (node.nextElementSibling) {
+                node = node.nextElementSibling;
+                continue start;
+            } else {
+                node = node.parentNode;
+            }
+        }
+    }
 }
 
 // Poor man's JQuery
