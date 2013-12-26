@@ -7,6 +7,7 @@
     <link href="document.css" rel="stylesheet" type="text/css" media="all">
     <script src="paragraph.js"></script>
     <script src="HTMLOutliner.js"></script>
+    <script src="htmlexplicator.js"></script>
   </head>
   <body>
 
@@ -18,7 +19,7 @@
 	    <li><a id="save">Save <span class="keybinding">Ctrl-S</span></a></li>
 	    <li><a id="import" class="expands">Import</a>
 	      <menu id="import_menu" class="submenu">
-		<li><a id="from_html">from HTML</a></li>
+		<li><input type="file" id="import_file" value="Select (or drop) a file"></li>
 	      </menu>
 	    </li>
 	    <li><a id="export" class="expands">Export</a>

@@ -1,0 +1,5 @@
+Paragraph applies the following functions to user input:
+- sanitize(): removes attributes, styles and forbidden elements
+- restructure(): rearranges the nodes so to use <section> elements for declaring structure
+- outline(): produces an outline of the document
+- ???(): renders the outline as nested <ol>'s

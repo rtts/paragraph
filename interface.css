@@ -104,6 +104,10 @@ article {
     cursor: pointer;
 }
 
+#menu #import_file {
+    width: 50px;
+}
+
 #menu label {
     cursor: pointer;
 }
